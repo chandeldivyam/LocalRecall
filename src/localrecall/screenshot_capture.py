@@ -4,6 +4,7 @@ from datetime import datetime
 import os
 from PIL import Image
 from .utils import ensure_dir
+from .encryption_manager import EncryptionManager
 
 class ScreenshotCapture:
     def __init__(self, compress=False, compress_quality=85, resize_factor=1.0):
@@ -13,6 +14,7 @@ class ScreenshotCapture:
         self.compress = compress
         self.compress_quality = compress_quality
         self.resize_factor = resize_factor
+        self.encryption_manager = EncryptionManager()
 
     def capture(self):
         screenshot = self.sct.grab(self.sct.monitors[0])
@@ -33,4 +35,12 @@ class ScreenshotCapture:
             filepath = os.path.join(self.ss_dir, filename)
             mss.tools.to_png(screenshot.rgb, screenshot.size, output=filepath)
 
-        return filepath
+        # Encrypt the screenshot file
+        self.encryption_manager.encrypt_file(filepath)
+        encrypted_filepath = filepath + '.encrypted'
+
+        # Remove the original unencrypted file
+        if os.path.exists(filepath):
+            os.remove(filepath)
+
+        return encrypted_filepath

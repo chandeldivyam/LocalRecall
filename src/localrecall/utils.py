@@ -17,3 +17,9 @@ def load_env_variables():
         os.environ['GEMINI_API_KEY'] = gemini_api_key
     else:
         print("Warning: GEMINI_API_KEY not found in .env file")
+    encryption_password = os.getenv('ENCRYPTION_PASSWORD')
+    if encryption_password:
+        os.environ['ENCRYPTION_PASSWORD'] = encryption_password
+    else:
+        print("Warning: ENCRYPTION_PASSWORD not found in .env file, setting the password to default")
+        os.environ['ENCRYPTION_PASSWORD'] = "default"

@@ -7,10 +7,15 @@ from typing import List
 from .embedding_processor import GeminiEmbeddingStrategy, LocalEmbeddingStrategy
 import requests
 from typing import Optional
+from .encryption_manager import EncryptionManager
+import tempfile
 
 class VisionStrategy(ABC):
     @abstractmethod
     def process_image(self, image_path, prompt):
+        pass
+
+    def decrypt_image_from_path(self):
         pass
 
     def generate_prompt(self, activity):
@@ -88,6 +93,7 @@ class LocalModelStrategy(VisionStrategy):
 class VisionProcessor:
     def __init__(self, strategy: str = "google"):
         self.data_manager = DataManager()
+        self.encryption_manager = EncryptionManager()
         if strategy == "google":
             self.strategy = GoogleGeminiStrategy()
             self.embedding_strategy = GeminiEmbeddingStrategy()
@@ -98,22 +104,39 @@ class VisionProcessor:
             raise ValueError("Invalid strategy")
         self.vector_data_manager = VectorDataManager(embedding_strategy=self.embedding_strategy)
 
+    def secure_delete(self, path):
+        """Securely delete a file by overwriting it with random data before unlinking."""
+        if os.path.isfile(path):
+            with open(path, "ba+") as delfile:
+                length = delfile.tell()
+            with open(path, "br+") as delfile:
+                delfile.seek(0)
+                delfile.write(os.urandom(length))
+            os.unlink(path)
+
     def process_unprocessed_activities(self):
         activities = self.data_manager.get_unprocessed_activities()
         for activity in activities:
-            screenshot_path = activity['screenshot']
-            prompt = self.strategy.generate_prompt(activity=activity)
-            current_activity = json.loads(activity.get("active_window", "{}"))
-            analysis = f"Current Activity Title: {current_activity.get('title', '')}\n" + self.strategy.process_image(screenshot_path, prompt)
-            # Update activity with analysis
-            activity['analysis'] = analysis
-            self.data_manager.update_activity(activity['timestamp'], activity)
-            self.data_manager.mark_activity_as_processed(activity['timestamp'])
-            
-            self.vector_data_manager.add_activity(
-                timestamp=activity['timestamp'],
-                created_at=activity['created_at'],
-                screenshot_path=screenshot_path,
-                active_window=json.loads(activity['active_window']),
-                analysis=analysis
-            )
+            encrypted_screenshot_path = activity['screenshot']
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as temp_file:
+                decrypted_screenshot_path = temp_file.name
+
+            try:
+                self.encryption_manager.decrypt_file(encrypted_screenshot_path, decrypted_screenshot_path)
+                prompt = self.strategy.generate_prompt(activity=activity)
+                current_activity = json.loads(activity.get("active_window", "{}"))
+                analysis = f"Current Activity Title: {current_activity.get('title', '')}\n" + self.strategy.process_image(decrypted_screenshot_path, prompt)
+                # Update activity with analysis
+                activity['analysis'] = analysis
+                self.data_manager.update_activity(activity['timestamp'], activity)
+                self.data_manager.mark_activity_as_processed(activity['timestamp'])
+                
+                self.vector_data_manager.add_activity(
+                    timestamp=activity['timestamp'],
+                    created_at=activity['created_at'],
+                    screenshot_path=encrypted_screenshot_path,
+                    active_window=json.loads(activity['active_window']),
+                    analysis=analysis
+                )
+            finally:
+                self.secure_delete(decrypted_screenshot_path)

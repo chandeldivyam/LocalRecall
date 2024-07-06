@@ -162,3 +162,7 @@ cython_debug/
 #.idea/
 
 .vscode/
+encryption_salt.bin
+data/
+vector_data/
+screenshots/
