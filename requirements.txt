@@ -3,3 +3,7 @@ psutil
 keyboard
 pywin32
 pyautogui
+google-generativeai
+Pillow
+python-dotenv
+chromadb

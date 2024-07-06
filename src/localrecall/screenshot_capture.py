@@ -8,8 +8,8 @@ from .utils import ensure_dir
 class ScreenshotCapture:
     def __init__(self, compress=False, compress_quality=85, resize_factor=1.0):
         self.sct = mss.mss()
-        self.temp_dir = os.path.join(os.getcwd(), 'temp_screenshots')
-        ensure_dir(self.temp_dir)
+        self.ss_dir = os.path.join(os.getcwd(), 'screenshots')
+        ensure_dir(self.ss_dir)
         self.compress = compress
         self.compress_quality = compress_quality
         self.resize_factor = resize_factor
@@ -20,7 +20,7 @@ class ScreenshotCapture:
         
         if self.compress:
             filename = f"screenshot_{timestamp}.jpg"
-            filepath = os.path.join(self.temp_dir, filename)
+            filepath = os.path.join(self.ss_dir, filename)
             img = Image.frombytes("RGB", screenshot.size, screenshot.rgb)
             
             if self.resize_factor != 1.0:
@@ -30,7 +30,7 @@ class ScreenshotCapture:
             img.save(filepath, format='JPEG', quality=self.compress_quality, optimize=True)
         else:
             filename = f"screenshot_{timestamp}.png"
-            filepath = os.path.join(self.temp_dir, filename)
+            filepath = os.path.join(self.ss_dir, filename)
             mss.tools.to_png(screenshot.rgb, screenshot.size, output=filepath)
 
         return filepath

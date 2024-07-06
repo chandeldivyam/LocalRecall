@@ -21,10 +21,9 @@ class WindowInfo:
                 return {
                     "title": title,
                     "process_name": process.name(),
-                    "exe": process.exe(),
                 }
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                return {"title": title, "process_name": "Unknown", "exe": "Unknown"}
+                return {"title": title, "process_name": "Unknown"}
         return None
 
     @staticmethod

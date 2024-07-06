@@ -13,13 +13,14 @@ class ActivityTracker:
     def run(self):
         try:
             while True:
+                # time.sleep(self.interval)
                 screenshot_path = self.screenshot_capture.capture()
                 active_window = self.window_info.get_active_window_info()
                 user_apps = self.window_info.get_user_applications()
                 
                 self.data_manager.save_activity(screenshot_path, active_window, user_apps)
-                
                 time.sleep(self.interval)
+                
         except KeyboardInterrupt:
             print("Activity tracking stopped.")
 
