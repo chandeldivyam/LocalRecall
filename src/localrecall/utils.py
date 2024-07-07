@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 def ensure_dir(directory):
     if not os.path.exists(directory):
-        os.makedirs(directory)
+        os.makedirs(directory, exist_ok=True)
 
 def load_env_variables():
     """Load environment variables from .env file in the root directory."""

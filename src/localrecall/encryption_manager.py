@@ -3,9 +3,17 @@ from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
+import tempfile
+from .utils import load_env_variables
 
 class EncryptionManager:
     def __init__(self, password=os.environ.get('ENCRYPTION_PASSWORD'), salt_file='encryption_salt.bin'):
+        if not password:
+            load_env_variables()
+            password = os.environ.get('ENCRYPTION_PASSWORD')
+        if not password:
+            raise ValueError("ENCRYPTION_PASSWORD environment variable is not set.")
+
         self.salt_file = salt_file
         if os.path.exists(self.salt_file):
             with open(self.salt_file, 'rb') as file:
@@ -41,8 +49,9 @@ class EncryptionManager:
                 encrypted_data = file.read()
             decrypted_data = self.fernet.decrypt(encrypted_data)
             
-            if decrypted_file_path is None:
-                decrypted_file_path = encrypted_file_path[:-10]  # Remove '.encrypted'
+            if not decrypted_file_path:
+                with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as temp_file:
+                    decrypted_file_path = temp_file.name
             
             with open(decrypted_file_path, 'wb') as file:
                 file.write(decrypted_data)

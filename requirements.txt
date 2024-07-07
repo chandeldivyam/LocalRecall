@@ -8,3 +8,7 @@ Pillow
 python-dotenv
 chromadb
 cryptography
+streamlit
+aiohttp
+sseclient
+ollama
