@@ -1,0 +1,14 @@
+mss
+psutil
+keyboard
+pywin32
+pyautogui
+google-generativeai
+Pillow
+python-dotenv
+chromadb
+cryptography
+streamlit
+aiohttp
+sseclient
+ollama

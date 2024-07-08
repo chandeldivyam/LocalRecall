@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pillow
+transformers
+torch
+torchvision
+timm
+flash_attn
+einops
