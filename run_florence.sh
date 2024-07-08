@@ -29,4 +29,4 @@ docker run -d \
     $IMAGE_NAME
 
 echo "Docker container is now running."
-echo "You can access the API at http://localhost:$PORT"
+echo "You can access the API at http://localhost:$PORT after the model is loaded."
