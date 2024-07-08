@@ -1,5 +1,5 @@
 # Use NVIDIA CUDA base image
-FROM huggingface/transformers-pytorch-gpu
+FROM huggingface/transformers-pytorch-gpu:4.41.2
 
 # Set working directory
 WORKDIR /app

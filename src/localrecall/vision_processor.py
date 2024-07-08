@@ -75,7 +75,7 @@ class LocalModelStrategy(VisionStrategy):
         try:
             with open(image_path, "rb") as image_file:
                 files = {"file": image_file}
-                response = requests.post(self.url, files=files, timeout=self.timeout)
+                response = requests.post(self.url, files=files, timeout=self.timeout, data={"action_type": "<MORE_DETAILED_CAPTION>"})
             
             response.raise_for_status()  # Raises an HTTPError for bad responses
 

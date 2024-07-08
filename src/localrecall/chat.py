@@ -18,7 +18,7 @@ class ChatStrategy(ABC):
 - Interpret and understand the context provided by the screenshot descriptions.
 - Provide detailed explanations, relevant, and actionable answers to the user's queries.
 - If you are unable to come up with an answer, polity respond that you are not sure or don't know
-- Do not mention that based on the documents / context provided. Just respond with the answer
+- Do not mention that based on the documents / context / screenshot provided. Just respond with the answer
 - Offer suggestions or ask clarifying questions when appropriate to better assist the user.
 
 Your goal is to be a knowledgeable, efficient, and trustworthy assistant, enhancing the user's productivity and decision-making based on their recent computer activities.
